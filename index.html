@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess-a-Flick</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f8ff; /* Light blue background */
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow: hidden; /* Prevents overflow from card animations */
+        }
+
+        .title-text {
+            font-size: 3rem;
+            font-weight: 900;
+            background-image: linear-gradient(45deg, #1e90ff, #00bfff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: moveGradient 5s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes moveGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .game-card {
+            background-color: transparent; /* Makes the parent transparent to allow for flip */
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            height: 400px; /* Fixed height to prevent collapse during flip */
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .game-card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            backface-visibility: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 16px;
+        }
+
+        .card-face.back {
+            transform: rotateY(180deg);
+        }
+
+        .btn {
+            @apply px-6 py-3 mt-8 font-bold text-lg rounded-full transition-all duration-300;
+        }
+
+        .btn-blue {
+            @apply bg-blue-500 text-white hover:bg-blue-600 active:scale-95 shadow-md;
+        }
+
+        .next-btn {
+            @apply bg-gray-800 text-white hover:bg-gray-700 active:scale-95 shadow-md;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title-text mb-12">Guess-a-Flick</h1>
+    
+    <div class="game-card">
+        <div class="card-inner">
+            <div class="card-face front">
+                <p class="text-3xl font-bold mb-4">Guess the Movie</p>
+                <div class="text-8xl my-8">
+                    <span id="emoji-clue"></span>
+                </div>
+                <button id="reveal-btn" class="btn btn-blue">Reveal Answer</button>
+            </div>
+            <div class="card-face back">
+                <p class="text-3xl font-bold mb-4">The Answer Is...</p>
+                <div class="text-4xl text-gray-800 font-extrabold mb-8">
+                    <span id="movie-name"></span>
+                </div>
+                <button id="next-btn" class="btn next-btn">Next Clue</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const clues = [
+        { name: "Titanic", emojis: "🚢❄️👩‍❤️‍👨" },
+        { name: "The Lion King", emojis: "🦁👑" },
+        { name: "Finding Nemo", emojis: "🐠➡️🌊" },
+        { name: "Harry Potter", emojis: "👓⚡🪄" },
+        { name: "The Princess and the Frog", emojis: "👸🐸" },
+        { name: "Forrest Gump", emojis: "🏃‍♂️🌳🏃‍♂️" },
+        { name: "Ratatouille", emojis: "🐀🧑‍🍳🍝" },
+        { name: "Up", emojis: "🎈👴🏠" },
+        { name: "Beauty and the Beast", emojis: "�❤️🌹🐻" },
+        { name: "Toy Story", emojis: "🧸📖" },
+        { name: "The Notebook", emojis: "✏️📓👩‍❤️‍👨" },
+        { name: "Life of Pi", emojis: "👳‍♂️🛶🐯" },
+        { name: "The Ring", emojis: "💍" }
+    ];
+
+    let currentClueIndex = 0;
+
+    const gameCard = document.querySelector('.game-card');
+    const emojiClueDisplay = document.getElementById('emoji-clue');
+    const movieNameDisplay = document.getElementById('movie-name');
+    const revealBtn = document.getElementById('reveal-btn');
+    const nextBtn = document.getElementById('next-btn');
+
+    // Function to load a new clue
+    const loadClue = (index) => {
+        gameCard.classList.remove('flipped');
+        emojiClueDisplay.textContent = clues[index].emojis;
+        movieNameDisplay.textContent = clues[index].name;
+    };
+
+    // Event listener for the reveal button
+    revealBtn.addEventListener('click', () => {
+        gameCard.classList.add('flipped');
+    });
+
+    // Event listener for the next button
+    nextBtn.addEventListener('click', () => {
+        currentClueIndex = (currentClueIndex + 1) % clues.length;
+        loadClue(currentClueIndex);
+    });
+
+    // Initial load
+    window.onload = () => {
+        loadClue(currentClueIndex);
+    };
+
+</script>
+</body>
+</html>
